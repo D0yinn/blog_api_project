@@ -1,6 +1,6 @@
 # Blog API
 
-A simple and secure blogging API built with **Node.js**, **Express**, and **MongoDB**.  
+A simple and secure blog API built with **Node.js**, **Express**, and **MongoDB**.  
 It supports user authentication, blog post management (CRUD), filtering, pagination, ordering, reading time calculation, and is fully tested using **Jest** and **Supertest**.
 
 
@@ -23,76 +23,154 @@ It supports user authentication, blog post management (CRUD), filtering, paginat
 - Mongoose
 
 ## Folder Structure
+
 blog_api/
 ├── controllers/
+│   └── blogController.js
+│   └── authController.js
+│
 ├── middleware/
+│   └── authMiddleware.js
+│
 ├── models/
-├── routes/
+│   └── Blog.js
+│   └── User.js
+│
+├── routes/ 
+│   └── blogRoutes.js
+│   └── authRoutes.js
+│
 ├── tests/
+│   └── blog.test.js
+│   └── auth.test.js
+│
 ├── utils/
-├── .env
+│   └── readingTime.js
+│
+├── .env 
 ├── .gitignore
 ├── app.js
 ├── server.js
 ├── package.json
-├── README.md
-
+└── README.md
 
 ## Installation & Setup
 
-1. **Clone the repository**  
-   ```bash
-   git clone <your-repo-url>
-   cd project name
+1. **Clone the repository**
+
+```bash
+git clone <your-repo-url>
+cd your project name
+```
 
 2. **Install dependencies**
+
+```bash
 npm install
+```
 
-3. **Create a .env file in the root directory and add the following:**
+3. **Set environment variables**
+   Create a `.env` file in the root directory and add the following:
+
+```env
 PORT=5000
-MONGO_URI=your_mongodb_uri_here
-JWT_SECRET=your_jwt_secret
+MONGO_URI=<your-mongo-db-uri>
+JWT_SECRET=<your-secret-key>
+```
 
-4. Start the development server
-npm run dev
+4. **Start the server**
 
-## Running Tests ##
-All endpoints are tested using Jest and Supertest.
+```bash
+npm start
+```
+
+5. **Run tests**
+
+```bash
 npm test
+```
 
 
-## API Endpoints ##
-**Auth Routes**
-- POST /register — Register a new user
+## API Documentation
 
-- POST /login — Log in and receive a token
+### Base URL
 
-**Blog Routes**
-- POST /blogs — Create a new blog (authenticated)
-
-- GET /blogs — Get all published blogs (with filter, sort, search, paginate)
-
-- GET /blogs/:id — Get a single blog by ID
-
-- PUT /blogs/:id — Update a blog (only the author)
-
-- DELETE /blogs/:id — Delete a blog (only the author)
-
-- PUT /blogs/:id/publish — Publish a draft blog
+http://localhost:5000/api
 
 
-## Query Parameters (for GET /blogs) ##
--author
+### Authentication
 
-- title
+* **Register:** `POST /auth/register`
+* **Login:** `POST /auth/login`
 
-- tags
+Use the returned token as:
 
-- state (published | draft)
+```http
+Authorization: Bearer <token>
+```
 
-- orderBy=reading_time or orderBy=createdAt
 
-- page and limit for pagination
+### Blog Endpoints
+
+#### Create Blog
+
+* `POST /blogs`
+* **Auth Required:** Yes
+* **Body:**
+
+```json
+{
+  "title": "The Power of the Girl Child",
+  "description": "Short insight on empowering girls",
+  "body": "Educating and empowering the girl child...",
+  "tags": ["education", "girl child", "empowerment"]
+}
+```
+
+#### Get All Published Blogs
+
+* `GET /blogs`
+* **Auth Required:** No
+* **Query Params:**
+
+  * `title` (optional)
+  * `tags` (optional, comma-separated)
+  * `author` (optional, ID)
+  * `order_by` = `reading_time` | `read_count` | `timestamp`
+  * `page` (default: 1)
+  * `limit` (default: 20)
+
+#### Get Blog by ID
+
+* `GET /blogs/:id`
+* **Auth Required:** Yes (for drafts)
+
+#### Update Blog
+
+* `PUT /blogs/:id`
+* **Auth Required:** Yes (owner only)
+
+#### Delete Blog
+
+* `DELETE /blogs/:id`
+* **Auth Required:** Yes (owner only)
+
+#### Publish Blog
+
+* `PATCH /blogs/:id/publish`
+* **Auth Required:** Yes (owner only)
+
+---
+
+## Testing
+
+* Run all tests with:
+
+```bash
+npm test
+```
+
+* Blog and Authentication tests are defined in the `tests/` folder using **Jest** and **Supertest**.
 
 
 ## Status ##
